@@ -38,10 +38,6 @@
 #define TYPE_FS 2 // Legs dephased
 #define TYPE_SL 3 // Legs together
 
-// Uncertainties
-#define UN_LA 0.99
-#define UN_FS 0.95
-#define UN_SL 0.90
 
 using namespace std;
 
@@ -52,7 +48,6 @@ int g_counter = 0;
 
 vector < double > rec_x;
 vector < double > rec_y;
-vector < double > rec_u;
 string sensor_frame_id;
 sensor_msgs::LaserScan SensorMsg;
 
@@ -61,7 +56,7 @@ void LaserCallback (const sensor_msgs::LaserScan::ConstPtr& msg);
 void FindPattern( string str, string pattern, list <int> *element_found );
 void ValidatePattern( list <int> *Pattern_list, int TYPE,  vector <int> flank_id0,  vector <int> flank_id1, vector <double> laser_x, vector <double> laser_y);
 double Dist2D( double x0, double y0, double x1, double y1 );
-void HumanPose( vector <double> *r_x, vector <double> *r_y, vector <double> *r_u, double UN, list <int> Pattern_list, int TYPE,  vector <int> flank_id0,  vector <int> flank_id1, vector <double> laser_x, vector <double> laser_y );
+void HumanPose( vector <double> *r_x, vector <double> *r_y, list <int> Pattern_list, int TYPE,  vector <int> flank_id0,  vector <int> flank_id1, vector <double> laser_x, vector <double> laser_y );
 
 
 int main(int argc, char **argv){
@@ -121,7 +116,6 @@ void LaserCallback (const sensor_msgs::LaserScan::ConstPtr& msg){
   // Vectors...
   rec_x.clear(); 
   rec_y.clear(); 
-  rec_u.clear(); 
   
   publish_on = true;
   sensor_on = true;
@@ -200,12 +194,11 @@ void LaserCallback (const sensor_msgs::LaserScan::ConstPtr& msg){
   //CENTROID PATTERN COMPUTATION & UNCERTAINTY
   rec_x.clear();
   rec_y.clear();
-  rec_u.clear();
   
-  HumanPose( &rec_x, &rec_y, &rec_u, UN_LA, Pattern_LA,  TYPE_LA,  flank_id0, flank_id1,  laser_x, laser_y);
-  HumanPose( &rec_x, &rec_y, &rec_u, UN_FS, Pattern_FS1, TYPE_FS,  flank_id0, flank_id1,  laser_x, laser_y);
-  HumanPose( &rec_x, &rec_y, &rec_u, UN_FS, Pattern_FS2, TYPE_FS,  flank_id0, flank_id1,  laser_x, laser_y);
-  HumanPose( &rec_x, &rec_y, &rec_u, UN_SL, Pattern_SL,  TYPE_SL,  flank_id0, flank_id1,  laser_x, laser_y);
+  HumanPose( &rec_x, &rec_y, Pattern_LA,  TYPE_LA,  flank_id0, flank_id1,  laser_x, laser_y);
+  HumanPose( &rec_x, &rec_y, Pattern_FS1, TYPE_FS,  flank_id0, flank_id1,  laser_x, laser_y);
+  HumanPose( &rec_x, &rec_y, Pattern_FS2, TYPE_FS,  flank_id0, flank_id1,  laser_x, laser_y);
+  HumanPose( &rec_x, &rec_y, Pattern_SL,  TYPE_SL,  flank_id0, flank_id1,  laser_x, laser_y);
 }
 
 
@@ -290,9 +283,9 @@ double Dist2D( double x0, double y0, double x1, double y1 ){
 }
 
 
-void HumanPose( vector <double> *r_x, vector <double> *r_y, vector <double> *r_u, double UN, list <int> Pattern_list, int TYPE,  vector <int> flank_id0,  vector <int> flank_id1, vector <double> laser_x, vector <double> laser_y ){
+void HumanPose( vector <double> *r_x, vector <double> *r_y, list <int> Pattern_list, int TYPE,  vector <int> flank_id0,  vector <int> flank_id1, vector <double> laser_x, vector <double> laser_y ){
   
-  double c_x, c_y, c_u;
+  double c_x, c_y;
   int l1, l2, l3, l4;
   int count; 
   list<int>::iterator it;
@@ -300,7 +293,6 @@ void HumanPose( vector <double> *r_x, vector <double> *r_y, vector <double> *r_u
   for( it = Pattern_list.begin(); it != Pattern_list.end(); it++ ){
     c_x = 0;
     c_y = 0;
-    c_u = 0;
     count = 0;
 
     l1 = flank_id1[ *it ];
@@ -310,17 +302,14 @@ void HumanPose( vector <double> *r_x, vector <double> *r_y, vector <double> *r_u
     case TYPE_LA:
       l3 = flank_id1[ *it + 2 ];
       l4 = flank_id0[ *it + 3 ];
-      c_u = UN_LA;
       break;
     case TYPE_FS:
       l3 = flank_id1[ *it + 1 ];
       l4 = flank_id0[ *it + 2 ];
-      c_u = UN_FS;
       break;
     case TYPE_SL:
       l3 = 1;
       l4 = 0;
-      c_u = UN_SL;
       break;
     }
 
@@ -340,6 +329,5 @@ void HumanPose( vector <double> *r_x, vector <double> *r_y, vector <double> *r_u
     
     (*r_x).push_back( c_x );
     (*r_y).push_back( c_y );
-    (*r_u).push_back( c_u );
   }
 }
