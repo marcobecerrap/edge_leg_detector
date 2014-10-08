@@ -1,4 +1,4 @@
-# The autonomous patrolling package
+# Leg Detector
            
 
 This is a ROS package that implements a leg detector from a LaserScan message, and publish the position of the humans in a PoseArray message.
