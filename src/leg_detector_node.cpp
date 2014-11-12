@@ -1,6 +1,6 @@
 // FILE: "Leg_detector_node" 
 // AUTHOR: Marco Antonio Becerra Pedraza (http://www.marcobecerrap.com)
-// SUMMARY: This program receives the LaserScan msgs and executes a leg detector algorithmx
+// SUMMARY: This program receives the LaserScan msgs and executes a leg detector algorithm
 // > to search for persons. At the end publishes a a vector with all the persons found 
 // > and their position relative to the sensor.
 //
@@ -190,6 +190,45 @@ void LaserCallback (const sensor_msgs::LaserScan::ConstPtr& msg){
   ValidatePattern( &Pattern_FS1, TYPE_FS, flank_id0, flank_id1,  laser_x, laser_y);
   ValidatePattern( &Pattern_FS2, TYPE_FS, flank_id0, flank_id1,  laser_x, laser_y);
   ValidatePattern( &Pattern_SL,  TYPE_SL, flank_id0, flank_id1,  laser_x, laser_y);
+
+  // ERASE REDUNDANT PATTERNS FROM ACCEPTED ONES (If a LA or FS pattern is accepted, we erase the SL on it)
+  // a) Erase SL from LA
+  list<int>::iterator it_K;
+  for( it_K = Pattern_LA.begin(); it_K != Pattern_LA.end(); it_K++ ){
+    list<int>::iterator it_M;
+    // Erase first leg
+    for( it_M = Pattern_SL.begin(); it_M != Pattern_SL.end(); it_M++ )
+      if( flank_id0[ *it_K ] == flank_id0[ *it_M ] ){
+	Pattern_SL.erase( it_M );
+	break;
+      }
+    // Erase second leg
+    for( it_M = Pattern_SL.begin(); it_M != Pattern_SL.end(); it_M++ )
+      if( flank_id0[ *it_K + 2 ] == flank_id0[ *it_M ] ){
+    	Pattern_SL.erase( it_M );
+    	break;
+      }
+
+  }
+  // b) Erase SL from FS1 "BBS"
+  for( it_K = Pattern_FS1.begin(); it_K != Pattern_FS1.end(); it_K++ ){
+    list<int>::iterator it_M;
+    for( it_M = Pattern_SL.begin(); it_M != Pattern_SL.end(); it_M++ )
+      if( flank_id0[ *it_K + 1 ] == flank_id0[ *it_M ] ){
+  	Pattern_SL.erase( it_M );
+  	break;
+      }
+  }
+  // c) Erase SL from FS2 "BSS"
+  for( it_K = Pattern_FS1.begin(); it_K != Pattern_FS1.end(); it_K++ ){
+    list<int>::iterator it_M;
+    for( it_M = Pattern_SL.begin(); it_M != Pattern_SL.end(); it_M++ )
+      if( flank_id0[ *it_K ] == flank_id0[ *it_M ] ){
+  	Pattern_SL.erase( it_M );
+  	break;
+      }
+  }
+
 
   //CENTROID PATTERN COMPUTATION & UNCERTAINTY
   rec_x.clear();
