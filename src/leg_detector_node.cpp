@@ -1,5 +1,6 @@
 // FILE: "Leg_detector_node" 
 // AUTHOR: Marco Antonio Becerra Pedraza (http://www.marcobecerrap.com)
+// MODIFIED BY: Ferdian Jovan (http://github.com/ferdianjovan)
 // SUMMARY: This program receives the LaserScan msgs and executes a leg detector algorithm
 // > to search for persons. At the end publishes a a vector with all the persons found 
 // > and their position relative to the sensor.
@@ -17,6 +18,7 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <boost/thread/mutex.hpp>
 
 #define PI 3.1416
 #define FILTER_SIZE 2
@@ -41,8 +43,7 @@
 
 using namespace std;
 
-bool publish_on  = false;
-bool sensor_on    = false;
+bool sensor_on   = false;
 
 int g_counter = 0;
 
@@ -50,6 +51,7 @@ vector < double > rec_x;
 vector < double > rec_y;
 string sensor_frame_id;
 sensor_msgs::LaserScan SensorMsg;
+boost::mutex mutex;
 
 void LaserFilter_Mean( vector <double> *vector_r, unsigned size );
 void LaserCallback (const sensor_msgs::LaserScan::ConstPtr& msg);
@@ -58,17 +60,32 @@ void ValidatePattern( list <int> *Pattern_list, int TYPE,  vector <int> flank_id
 double Dist2D( double x0, double y0, double x1, double y1 );
 void HumanPose( vector <double> *r_x, vector <double> *r_y, list <int> Pattern_list, int TYPE,  vector <int> flank_id0,  vector <int> flank_id1, vector <double> laser_x, vector <double> laser_y );
 
+// added by Ferdian Jovan
+// function to restrict a possibility of persons standing next to each other
+void ValidateDistance();
+
 
 int main(int argc, char **argv){
 
   ros::init(argc, argv, "leg_detector_node");
   ros::NodeHandle n;
   ros::Publisher  node_pub = n.advertise <geometry_msgs::PoseArray>("leg_detector_topic", 2); // Humans in the environment
-  ros::Subscriber node_sub = n.subscribe("/base_scan", 2, LaserCallback);
+
+  // get param from launch file
+  string laser_scan = "";
+  ros::param::get("~laser_scan", laser_scan);
+  ros::Subscriber node_sub = n.subscribe(laser_scan, 2, LaserCallback);
   geometry_msgs::PoseArray msgx;
+  ros::Rate loop_rate(30);
+
+
+  int seq_counter = 0;
   
   while( ros::ok() ){
     if( sensor_on == true ){
+
+      // delete persons who are too near to each other
+      void ValidateDistance();
 
       //------------------------------------------
       // Copying to proper PoseArray data structure
@@ -95,13 +112,15 @@ int main(int argc, char **argv){
       // Header config
       msgx.header.stamp = SensorMsg.header.stamp;
       msgx.header.frame_id = SensorMsg.header.frame_id;
+      msgx.header.seq = seq_counter;
       msgx.poses = HumanPoseVector;
       //------------------------------------------
 
       node_pub.publish( msgx );
-      publish_on = false;
     }
     ros::spinOnce();
+    loop_rate.sleep();
+    seq_counter++;
   }
 
   return 0;
@@ -117,7 +136,6 @@ void LaserCallback (const sensor_msgs::LaserScan::ConstPtr& msg){
   rec_x.clear(); 
   rec_y.clear(); 
   
-  publish_on = true;
   sensor_on = true;
   
   double px, py, pr, pt;
@@ -229,7 +247,8 @@ void LaserCallback (const sensor_msgs::LaserScan::ConstPtr& msg){
       }
   }
 
-
+  
+  boost::mutex::scoped_lock lock(mutex);
   //CENTROID PATTERN COMPUTATION & UNCERTAINTY
   rec_x.clear();
   rec_y.clear();
@@ -369,4 +388,25 @@ void HumanPose( vector <double> *r_x, vector <double> *r_y, list <int> Pattern_l
     (*r_x).push_back( c_x );
     (*r_y).push_back( c_y );
   }
+}
+
+
+// Validate distance between persons
+void ValidateDistance(){
+    boost::mutex::scoped_lock lock(mutex);
+    int j = 0;
+    while(j < (rec_x.size() - 1))
+    {
+        // if the Euclidean distance between two persons are smaller than
+        // the maximum width of a leg then the second person must be eliminated
+        if (ANTRO_a1 > Dist2D(rec_x[j], rec_y[j], rec_x[j+1], rec_y[j+1]))
+        {
+            rec_x.erase(rec_x.begin() + (j + 1));
+            rec_y.erase(rec_y.begin() + (j + 1));
+        }
+        else
+        {
+            j++;
+        }
+    }
 }
