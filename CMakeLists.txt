@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
 )
 
+find_package(Boost REQUIRED COMPONENTS thread)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -86,6 +87,7 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
@@ -103,5 +105,6 @@ add_executable(leg_detector_node src/leg_detector_node.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(leg_detector_node
   ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
 )
 
