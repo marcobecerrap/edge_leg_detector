@@ -110,7 +110,7 @@ int main(int argc, char **argv){
       }
 
       // Header config
-      msgx.header.stamp = SensorMsg.header.stamp;
+      msgx.header.stamp = ros::Time::now();
       msgx.header.frame_id = SensorMsg.header.frame_id;
       msgx.header.seq = seq_counter;
       msgx.poses = HumanPoseVector;
