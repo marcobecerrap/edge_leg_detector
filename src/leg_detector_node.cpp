@@ -399,7 +399,7 @@ void ValidateDistance(){
     {
         // if the Euclidean distance between two persons are smaller than
         // the maximum width of a leg then the second person must be eliminated
-        if (ANTRO_a1 > Dist2D(rec_x[j], rec_y[j], rec_x[j+1], rec_y[j+1]))
+        if (ANTRO_b1 > Dist2D(rec_x[j], rec_y[j], rec_x[j+1], rec_y[j+1]))
         {
             rec_x.erase(rec_x.begin() + (j + 1));
             rec_y.erase(rec_y.begin() + (j + 1));
