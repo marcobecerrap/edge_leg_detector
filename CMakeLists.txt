@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(leg_detector)
+project(simple_leg_detector)
 
 find_package(catkin REQUIRED COMPONENTS
+  geometry_msgs
   roscpp
   rospy
   sensor_msgs
-  geometry_msgs
 )
 
 find_package(Boost REQUIRED COMPONENTS thread)
@@ -21,10 +21,9 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-add_executable(leg_detector_node src/leg_detector_node.cpp)
+add_executable(detector src/simple_leg_detector/detector.cpp)
 
-target_link_libraries(leg_detector_node
+target_link_libraries(detector
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
-
