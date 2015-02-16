@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>simple_leg_detector</name>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
   <description>A leg detector that identifies three different leg patterns based on the paper of Nicholas Belloto</description>
 
   <maintainer email="marcobecerrap@gmail.com">Marco Antonio Becerra Pedraza</maintainer>
