@@ -76,7 +76,7 @@ int main(int argc, char **argv){
   ros::param::get("~laser_scan", laser_scan);
   ros::Subscriber node_sub = n.subscribe(laser_scan, 2, LaserCallback);
   geometry_msgs::PoseArray msgx;
-  ros::Rate loop_rate(30);
+  ros::Rate loop_rate(15);
 
 
   int seq_counter = 0;

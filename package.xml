@@ -2,9 +2,9 @@
 <package>
   <name>leg_detector</name>
   <version>0.0.1</version>
-  <description>The leg_detector package</description>
+  <description>A leg detector that identifies three different leg patterns based on the paper of Nicholas Belloto</description>
 
-  <maintainer email="marco@todo.todo">marcobecerrap</maintainer>
+  <maintainer email="marcobecerrap@gmail.com">Marco Antonio Becerra Pedraza</maintainer>
   <maintainer email="fxj345@cs.bham.ac.uk">Ferdian Jovan</maintainer>
 
   <license>MIT</license>
