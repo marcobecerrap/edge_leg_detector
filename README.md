@@ -9,7 +9,7 @@ doi: 10.1109/TSMCB.2008.2004050
 Run this package by typing 
 
 ```
-roslaunch simple_leg_detector simple_leg_detector.launch [laser_scan:=/scan]
+roslaunch edge_leg_detector edge_leg_detector.launch [laser_scan:=/scan]
 ```
 
 where ```laser_scan``` is the scanner topic at which the laser message is

@@ -67,9 +67,9 @@ void ValidateDistance();
 
 int main(int argc, char **argv){
 
-  ros::init(argc, argv, "simple_leg_detector");
+  ros::init(argc, argv, "edge_leg_detector");
   ros::NodeHandle n;
-  ros::Publisher  node_pub = n.advertise <geometry_msgs::PoseArray>("simple_leg_detector", 2); // Humans in the environment
+  ros::Publisher  node_pub = n.advertise <geometry_msgs::PoseArray>("edge_leg_detector", 2); // Humans in the environment
 
   // get param from launch file
   string laser_scan = "";

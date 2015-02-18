@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(simple_leg_detector)
+project(edge_leg_detector)
 
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
@@ -21,7 +21,7 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-add_executable(detector src/simple_leg_detector/detector.cpp)
+add_executable(detector src/edge_leg_detector/detector.cpp)
 
 target_link_libraries(detector
   ${catkin_LIBRARIES}
