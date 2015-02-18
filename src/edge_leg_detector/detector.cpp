@@ -67,16 +67,16 @@ void ValidateDistance();
 
 int main(int argc, char **argv){
 
-  ros::init(argc, argv, "leg_detector_node");
+  ros::init(argc, argv, "edge_leg_detector");
   ros::NodeHandle n;
-  ros::Publisher  node_pub = n.advertise <geometry_msgs::PoseArray>("leg_detector_topic", 2); // Humans in the environment
+  ros::Publisher  node_pub = n.advertise <geometry_msgs::PoseArray>("edge_leg_detector", 2); // Humans in the environment
 
   // get param from launch file
   string laser_scan = "";
   ros::param::get("~laser_scan", laser_scan);
   ros::Subscriber node_sub = n.subscribe(laser_scan, 2, LaserCallback);
   geometry_msgs::PoseArray msgx;
-  ros::Rate loop_rate(30);
+  ros::Rate loop_rate(15);
 
 
   int seq_counter = 0;
@@ -110,7 +110,7 @@ int main(int argc, char **argv){
       }
 
       // Header config
-      msgx.header.stamp = SensorMsg.header.stamp;
+      msgx.header.stamp = ros::Time::now();
       msgx.header.frame_id = SensorMsg.header.frame_id;
       msgx.header.seq = seq_counter;
       msgx.poses = HumanPoseVector;
@@ -399,7 +399,7 @@ void ValidateDistance(){
     {
         // if the Euclidean distance between two persons are smaller than
         // the maximum width of a leg then the second person must be eliminated
-        if (ANTRO_a1 > Dist2D(rec_x[j], rec_y[j], rec_x[j+1], rec_y[j+1]))
+        if (ANTRO_b1 > Dist2D(rec_x[j], rec_y[j], rec_x[j+1], rec_y[j+1]))
         {
             rec_x.erase(rec_x.begin() + (j + 1));
             rec_y.erase(rec_y.begin() + (j + 1));

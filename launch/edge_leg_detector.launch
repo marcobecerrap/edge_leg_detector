@@ -5,7 +5,7 @@
 
     <machine name="$(arg machine)" address="$(arg machine)" env-loader="$(optenv ROS_ENV_LOADER )" user="$(arg user)" default="true"/>
     
-    <node pkg="leg_detector" type="leg_detector_node" name="leg_detector" output="screen">
+    <node pkg="edge_leg_detector" type="detector" name="edge_leg_detector" output="screen">
         <param name="laser_scan" value="$(arg laser_scan)" type="string"/>
     </node>
 
