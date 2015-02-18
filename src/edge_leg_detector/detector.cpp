@@ -72,7 +72,7 @@ int main(int argc, char **argv){
   ros::Publisher  node_pub = n.advertise <geometry_msgs::PoseArray>("edge_leg_detector", 2); // Humans in the environment
 
   // get param from launch file
-  string laser_scan = "";
+  string laser_scan = "/scan";
   ros::param::get("~laser_scan", laser_scan);
   ros::Subscriber node_sub = n.subscribe(laser_scan, 2, LaserCallback);
   geometry_msgs::PoseArray msgx;
