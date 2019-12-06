@@ -41,7 +41,9 @@
 #define TYPE_SL 3 // Legs together
 
 
-using namespace std;
+using std::vector;
+using std::string;
+using std::list;
 
 bool sensor_on   = false;
 
